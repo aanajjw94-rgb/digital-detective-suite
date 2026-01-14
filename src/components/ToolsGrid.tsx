@@ -1,11 +1,17 @@
 import { useState } from "react";
-import { Hash, Image, Binary, Code2, FileSearch, FileText, ChevronRight } from "lucide-react";
+import { Hash, Image, Binary, Code2, FileSearch, FileText, ChevronRight, Smartphone, Terminal, FileCode, HardDrive, Database, Search } from "lucide-react";
 import HashAnalyzer from "./tools/HashAnalyzer";
 import MetadataAnalyzer from "./tools/MetadataAnalyzer";
 import HexViewer from "./tools/HexViewer";
 import Base64Tool from "./tools/Base64Tool";
 import FileSignatureDetector from "./tools/FileSignatureDetector";
 import TextAnalyzer from "./tools/TextAnalyzer";
+import { ADBBackupAnalyzer } from "./tools/ADBBackupAnalyzer";
+import { ADBCommandGenerator } from "./tools/ADBCommandGenerator";
+import { AndroidLogAnalyzer } from "./tools/AndroidLogAnalyzer";
+import { FileCarver } from "./tools/FileCarver";
+import { FileSystemAnalyzer } from "./tools/FileSystemAnalyzer";
+import { SlackSpaceAnalyzer } from "./tools/SlackSpaceAnalyzer";
 
 const tools = [
   { id: "hash", name: "محلل Hash", icon: Hash, description: "MD5, SHA-1, SHA-256, SHA-512", component: HashAnalyzer },
@@ -14,6 +20,12 @@ const tools = [
   { id: "base64", name: "أداة Base64", icon: Code2, description: "تشفير وفك تشفير", component: Base64Tool },
   { id: "signature", name: "كاشف التوقيعات", icon: FileSearch, description: "Magic Numbers", component: FileSignatureDetector },
   { id: "text", name: "محلل النصوص", icon: FileText, description: "استخراج البيانات", component: TextAnalyzer },
+  { id: "adb-backup", name: "محلل نسخ ADB", icon: Smartphone, description: "تحليل ملفات .ab", component: ADBBackupAnalyzer },
+  { id: "adb-commands", name: "أوامر ADB", icon: Terminal, description: "مولد الأوامر الجنائية", component: ADBCommandGenerator },
+  { id: "android-logs", name: "سجلات Android", icon: FileCode, description: "تحليل Logcat", component: AndroidLogAnalyzer },
+  { id: "file-carver", name: "File Carving", icon: HardDrive, description: "استعادة الملفات", component: FileCarver },
+  { id: "fs-analyzer", name: "محلل FAT/NTFS", icon: Database, description: "تحليل أنظمة الملفات", component: FileSystemAnalyzer },
+  { id: "slack-space", name: "Slack Space", icon: Search, description: "البيانات المخفية", component: SlackSpaceAnalyzer },
 ];
 
 const ToolsGrid = () => {
