@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
-import { Hash, Copy, Check, Upload, FileText } from "lucide-react";
+import { Hash, Copy, Check, Upload, FileText, FileDown } from "lucide-react";
 import { toast } from "sonner";
+import { generateHashReport } from "@/lib/pdfExport";
 
 const HashAnalyzer = () => {
   const [input, setInput] = useState("");
@@ -145,7 +146,19 @@ const HashAnalyzer = () => {
       {/* Results */}
       {hashes && (
         <div className="mt-6 space-y-3 animate-fade-in">
-          <h4 className="text-sm font-medium text-muted-foreground mb-3">النتائج:</h4>
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="text-sm font-medium text-muted-foreground">النتائج:</h4>
+            <button
+              onClick={() => {
+                generateHashReport(hashes, fileName || undefined, input || undefined);
+                toast.success("تم تصدير التقرير بنجاح!");
+              }}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/30 hover:bg-primary/20 transition-colors text-sm text-primary"
+            >
+              <FileDown className="w-4 h-4" />
+              <span>تصدير PDF</span>
+            </button>
+          </div>
           {hashTypes.map(({ key, label, color }) => (
             <div key={key} className="bg-secondary/50 rounded-lg p-4 border border-border">
               <div className="flex items-center justify-between mb-2">

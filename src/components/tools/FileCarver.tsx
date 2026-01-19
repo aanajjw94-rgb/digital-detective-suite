@@ -1,11 +1,13 @@
 import { useState, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { HardDrive, Upload, FileImage, FileVideo, FileAudio, FileText, File, Download, Search } from "lucide-react";
+import { HardDrive, Upload, FileImage, FileVideo, FileAudio, FileText, File, Download, Search, FileDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
+import { generateFileCarverReport } from "@/lib/pdfExport";
+import { toast } from "sonner";
 
 interface FileSignature {
   name: string;
@@ -354,10 +356,30 @@ export const FileCarver = () => {
               </div>
             </ScrollArea>
 
-            <Button onClick={downloadAllFiles} className="w-full">
-              <Download className="w-4 h-4 ml-2" />
-              تحميل جميع الملفات ({carvedFiles.length})
-            </Button>
+            <div className="flex gap-2">
+              <Button onClick={downloadAllFiles} className="flex-1">
+                <Download className="w-4 h-4 ml-2" />
+                تحميل الملفات ({carvedFiles.length})
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  generateFileCarverReport(diskImageName, diskImageSize, carvedFiles.map(f => ({
+                    type: f.type,
+                    extension: f.extension,
+                    offset: f.offset,
+                    size: f.size,
+                    category: f.category,
+                    confidence: f.confidence,
+                  })));
+                  toast.success("تم تصدير التقرير بنجاح!");
+                }}
+                className="border-primary/30 hover:bg-primary/10"
+              >
+                <FileDown className="w-4 h-4 ml-2" />
+                PDF
+              </Button>
+            </div>
           </>
         )}
 
