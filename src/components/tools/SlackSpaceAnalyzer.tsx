@@ -1,11 +1,13 @@
 import { useState, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Search, Upload, Eye, EyeOff, AlertTriangle, Download, FileSearch } from "lucide-react";
+import { Search, Upload, Eye, EyeOff, AlertTriangle, Download, FileSearch, FileDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { generateForensicPDF, ForensicReport } from "@/lib/pdfExport";
+import { toast } from "sonner";
 
 interface SlackFragment {
   offset: number;
@@ -463,10 +465,69 @@ ${fragments.map((f, i) => `
               </TabsContent>
             </Tabs>
 
-            <Button onClick={exportReport} className="w-full">
-              <Download className="w-4 h-4 ml-2" />
-              تصدير التقرير الكامل
-            </Button>
+            <div className="flex gap-2">
+              <Button onClick={exportReport} variant="outline" className="flex-1">
+                <Download className="w-4 h-4 ml-2" />
+                تصدير TXT
+              </Button>
+              <Button 
+                onClick={() => {
+                  const allPatterns = fragments.flatMap(f => f.patterns);
+                  const report: ForensicReport = {
+                    toolName: 'Slack Space Analyzer',
+                    toolNameAr: 'محلل Slack Space',
+                    generatedAt: new Date(),
+                    fileName: imageName,
+                    sections: [
+                      {
+                        title: 'Analysis Summary',
+                        table: {
+                          headers: ['Metric', 'Value'],
+                          rows: [
+                            ['Disk Image', imageName],
+                            ['Total Slack Space', formatBytes(totalSlackSpace)],
+                            ['Fragments Found', fragments.length.toString()],
+                            ['Patterns Detected', allPatterns.length.toString()],
+                          ]
+                        }
+                      },
+                      {
+                        title: 'Detected Patterns',
+                        table: {
+                          headers: ['Type', 'Value', 'Offset', 'Confidence'],
+                          rows: allPatterns.slice(0, 50).map(p => [
+                            p.type,
+                            p.value.slice(0, 50),
+                            `0x${p.offset.toString(16).toUpperCase()}`,
+                            `${p.confidence}%`
+                          ])
+                        }
+                      },
+                      {
+                        title: 'Fragment Details',
+                        table: {
+                          headers: ['Type', 'Offset', 'Size', 'Entropy', 'Patterns'],
+                          rows: fragments.map(f => [
+                            f.type,
+                            `0x${f.offset.toString(16).toUpperCase()}`,
+                            formatBytes(f.size),
+                            `${(f.entropy * 100).toFixed(1)}%`,
+                            f.patterns.length.toString()
+                          ])
+                        }
+                      }
+                    ],
+                    summary: `Slack space analysis complete. Found ${fragments.length} fragments containing ${allPatterns.length} patterns including emails, URLs, and potential sensitive data.`
+                  };
+                  generateForensicPDF(report);
+                  toast.success("تم تصدير التقرير بنجاح!");
+                }}
+                className="flex-1"
+              >
+                <FileDown className="w-4 h-4 ml-2" />
+                تصدير PDF
+              </Button>
+            </div>
           </>
         )}
 

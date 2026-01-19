@@ -1,10 +1,12 @@
 import { useState, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Smartphone, Upload, FileArchive, Package, Database, MessageSquare, Users, Image } from "lucide-react";
+import { Smartphone, Upload, FileArchive, Package, Database, MessageSquare, Users, Image, FileDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { generateForensicPDF, ForensicReport } from "@/lib/pdfExport";
+import { toast } from "sonner";
 
 interface BackupInfo {
   version: number;
@@ -327,6 +329,62 @@ export const ADBBackupAnalyzer = () => {
                 </p>
               </div>
             )}
+
+            <Button 
+              onClick={() => {
+                const report: ForensicReport = {
+                  toolName: 'ADB Backup Analyzer',
+                  toolNameAr: 'محلل نسخ ADB',
+                  generatedAt: new Date(),
+                  fileName,
+                  sections: [
+                    {
+                      title: 'Backup Information',
+                      table: {
+                        headers: ['Property', 'Value'],
+                        rows: [
+                          ['File Name', fileName],
+                          ['Version', backupInfo.version.toString()],
+                          ['Size', backupInfo.estimatedSize],
+                          ['Compressed', backupInfo.compressed ? 'Yes' : 'No'],
+                          ['Encrypted', backupInfo.encrypted ? 'Yes' : 'No'],
+                        ]
+                      }
+                    },
+                    {
+                      title: 'Applications Found',
+                      table: {
+                        headers: ['Package Name', 'Has APK', 'Has Data', 'Data Size'],
+                        rows: backupInfo.apps.map(app => [
+                          app.packageName,
+                          app.hasApk ? 'Yes' : 'No',
+                          app.hasData ? 'Yes' : 'No',
+                          formatBytes(app.dataSize)
+                        ])
+                      }
+                    },
+                    {
+                      title: 'Databases Detected',
+                      table: {
+                        headers: ['Application', 'Database', 'Tables'],
+                        rows: backupInfo.databases.map(db => [
+                          db.appName,
+                          db.dbName,
+                          db.tables.join(', ')
+                        ])
+                      }
+                    }
+                  ],
+                  summary: `ADB backup analysis complete. Found ${backupInfo.apps.length} applications, ${backupInfo.databases.length} databases. ${backupInfo.encrypted ? 'Backup is encrypted - decryption required for full analysis.' : 'Backup is unencrypted.'}`
+                };
+                generateForensicPDF(report);
+                toast.success("تم تصدير التقرير بنجاح!");
+              }}
+              className="w-full"
+            >
+              <FileDown className="w-4 h-4 ml-2" />
+              تصدير تقرير PDF
+            </Button>
           </div>
         )}
       </CardContent>

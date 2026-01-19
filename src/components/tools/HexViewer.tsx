@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
-import { Binary, Upload, FileCode, Download } from "lucide-react";
+import { Binary, Upload, FileCode, Download, FileDown } from "lucide-react";
 import { toast } from "sonner";
+import { generateGenericReport } from "@/lib/pdfExport";
 
 const HexViewer = () => {
   const [hexData, setHexData] = useState<string[]>([]);
@@ -119,9 +120,37 @@ const HexViewer = () => {
               <FileCode className="w-5 h-5 text-success" />
               <span className="font-mono text-sm text-foreground truncate max-w-[200px]">{fileName}</span>
             </div>
-            <span className="text-xs text-muted-foreground font-mono">
-              {fileSize} bytes {fileSize > 1024 && '(عرض أول 1KB)'}
-            </span>
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-muted-foreground font-mono">
+                {fileSize} bytes {fileSize > 1024 && '(عرض أول 1KB)'}
+              </span>
+              <button
+                onClick={() => {
+                  generateGenericReport(
+                    'Hex Viewer',
+                    'عارض Hex',
+                    {
+                      'File Information': {
+                        'File Name': fileName || 'Unknown',
+                        'File Size': `${fileSize} bytes`,
+                        'Lines Displayed': hexData.length.toString(),
+                      },
+                      'First 16 Hex Lines': hexData.slice(0, 16).map((hex, i) => ({
+                        Offset: formatOffset(i),
+                        Hex: hex,
+                        ASCII: asciiData[i],
+                      })),
+                    },
+                    fileName || undefined
+                  );
+                  toast.success("تم تصدير التقرير بنجاح!");
+                }}
+                className="flex items-center gap-1 px-2 py-1 rounded bg-primary/10 border border-primary/30 hover:bg-primary/20 transition-colors text-xs text-primary"
+              >
+                <FileDown className="w-3 h-3" />
+                PDF
+              </button>
+            </div>
           </div>
 
           {/* Hex Display */}

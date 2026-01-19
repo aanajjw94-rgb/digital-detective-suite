@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
-import { FileSearch, Upload, AlertTriangle, CheckCircle, FileType } from "lucide-react";
+import { FileSearch, Upload, AlertTriangle, CheckCircle, FileType, FileDown } from "lucide-react";
 import { toast } from "sonner";
+import { generateGenericReport } from "@/lib/pdfExport";
 
 interface FileSignature {
   hex: string;
@@ -134,10 +135,36 @@ const FileSignatureDetector = () => {
       {/* Results */}
       {result && !isLoading && (
         <div className="mt-6 animate-fade-in space-y-4">
+          <div className="flex justify-end">
+            <button
+              onClick={() => {
+                generateGenericReport(
+                  'File Signature Detector',
+                  'كاشف توقيع الملفات',
+                  {
+                    'Detection Results': {
+                      'File Name': fileName || 'Unknown',
+                      'Declared Extension': `.${result.actualExtension}`,
+                      'File Signature (Hex)': result.headerHex,
+                      'Detected Type': result.detectedType?.description || 'Unknown',
+                      'Category': result.detectedType?.category || 'Unknown',
+                      'Status': result.isSuspicious ? 'SUSPICIOUS - Mismatch Detected' : result.isMatch ? 'Valid - Signature Matches' : 'Unknown Type',
+                    },
+                  },
+                  fileName || undefined
+                );
+                toast.success("تم تصدير التقرير بنجاح!");
+              }}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/30 hover:bg-primary/20 transition-colors text-sm text-primary"
+            >
+              <FileDown className="w-4 h-4" />
+              <span>تصدير PDF</span>
+            </button>
+          </div>
           {/* Status Banner */}
           <div className={`p-4 rounded-xl border flex items-center gap-3 ${
             result.isSuspicious 
-              ? "bg-destructive/10 border-destructive/30" 
+              ? "bg-destructive/10 border-destructive/30"
               : result.isMatch 
                 ? "bg-success/10 border-success/30"
                 : "bg-warning/10 border-warning/30"
