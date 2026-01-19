@@ -8,6 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { generateForensicPDF, ForensicReport } from "@/lib/pdfExport";
 import { toast } from "sonner";
+import { SaveToCase } from "./SaveToCase";
 
 interface FileEntry {
   name: string;
@@ -567,6 +568,21 @@ ${result.deletedFiles.filter(f => f.recoverable).map(f =>
                 <Download className="w-4 h-4 ml-2" />
                 تصدير TXT
               </Button>
+              <SaveToCase
+                toolName="FAT/NTFS Analyzer"
+                reportType="File System Analysis"
+                reportData={{
+                  imageName,
+                  totalSize: result.totalSize,
+                  fileSystem: result.fatType || result.ntfsVersion || 'Unknown',
+                  filesCount: result.files.length,
+                  deletedFilesCount: result.deletedFiles.length,
+                  recoverableCount: result.deletedFiles.filter(f => f.recoverable).length,
+                  partitionsCount: result.partitions.length
+                }}
+                fileName={imageName}
+                disabled={!result}
+              />
               <Button 
                 onClick={() => {
                   const report: ForensicReport = {

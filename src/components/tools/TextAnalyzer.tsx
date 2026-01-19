@@ -2,6 +2,7 @@ import { useState } from "react";
 import { FileText, Search, BarChart3, Eye, EyeOff, FileDown } from "lucide-react";
 import { toast } from "sonner";
 import { generateGenericReport } from "@/lib/pdfExport";
+import { SaveToCase } from "./SaveToCase";
 
 interface TextStats {
   characters: number;
@@ -100,7 +101,18 @@ const TextAnalyzer = () => {
       {/* Results */}
       {stats && (
         <div className="mt-6 animate-fade-in space-y-4">
-          <div className="flex justify-end">
+          <div className="flex justify-end gap-2">
+            <SaveToCase
+              toolName="Text Analyzer"
+              reportType="Text Analysis"
+              reportData={{
+                stats,
+                extractedEmails: stats.emails,
+                extractedUrls: stats.urls,
+                extractedIPs: stats.ips
+              }}
+              disabled={!stats}
+            />
             <button
               onClick={() => {
                 generateGenericReport(

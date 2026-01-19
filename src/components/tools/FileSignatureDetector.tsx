@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import { FileSearch, Upload, AlertTriangle, CheckCircle, FileType, FileDown } from "lucide-react";
 import { toast } from "sonner";
 import { generateGenericReport } from "@/lib/pdfExport";
+import { SaveToCase } from "./SaveToCase";
 
 interface FileSignature {
   hex: string;
@@ -135,7 +136,20 @@ const FileSignatureDetector = () => {
       {/* Results */}
       {result && !isLoading && (
         <div className="mt-6 animate-fade-in space-y-4">
-          <div className="flex justify-end">
+          <div className="flex justify-end gap-2">
+            <SaveToCase
+              toolName="File Signature Detector"
+              reportType="Signature Analysis"
+              reportData={{
+                fileName,
+                extension: result.actualExtension,
+                signature: result.headerHex,
+                detectedType: result.detectedType?.description,
+                isSuspicious: result.isSuspicious
+              }}
+              fileName={fileName || undefined}
+              disabled={!result}
+            />
             <button
               onClick={() => {
                 generateGenericReport(

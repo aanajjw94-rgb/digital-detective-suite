@@ -8,6 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { generateForensicPDF, ForensicReport } from "@/lib/pdfExport";
 import { toast } from "sonner";
+import { SaveToCase } from "./SaveToCase";
 
 interface SlackFragment {
   offset: number;
@@ -470,6 +471,19 @@ ${fragments.map((f, i) => `
                 <Download className="w-4 h-4 ml-2" />
                 تصدير TXT
               </Button>
+              <SaveToCase
+                toolName="Slack Space Analyzer"
+                reportType="Hidden Data Analysis"
+                reportData={{
+                  imageName,
+                  totalSlackSpace,
+                  fragmentsCount: fragments.length,
+                  patternsCount: fragments.flatMap(f => f.patterns).length,
+                  patternTypes: [...new Set(fragments.flatMap(f => f.patterns.map(p => p.type)))]
+                }}
+                fileName={imageName}
+                disabled={fragments.length === 0}
+              />
               <Button 
                 onClick={() => {
                   const allPatterns = fragments.flatMap(f => f.patterns);

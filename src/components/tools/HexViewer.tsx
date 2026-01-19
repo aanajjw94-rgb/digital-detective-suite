@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import { Binary, Upload, FileCode, Download, FileDown } from "lucide-react";
 import { toast } from "sonner";
 import { generateGenericReport } from "@/lib/pdfExport";
+import { SaveToCase } from "./SaveToCase";
 
 const HexViewer = () => {
   const [hexData, setHexData] = useState<string[]>([]);
@@ -120,10 +121,17 @@ const HexViewer = () => {
               <FileCode className="w-5 h-5 text-success" />
               <span className="font-mono text-sm text-foreground truncate max-w-[200px]">{fileName}</span>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <span className="text-xs text-muted-foreground font-mono">
                 {fileSize} bytes {fileSize > 1024 && '(عرض أول 1KB)'}
               </span>
+              <SaveToCase
+                toolName="Hex Viewer"
+                reportType="Hex Dump"
+                reportData={{ fileName, fileSize, hexPreview: hexData.slice(0, 16) }}
+                fileName={fileName || undefined}
+                disabled={hexData.length === 0}
+              />
               <button
                 onClick={() => {
                   generateGenericReport(
