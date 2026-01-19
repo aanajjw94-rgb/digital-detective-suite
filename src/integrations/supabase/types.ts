@@ -14,7 +14,83 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      cases: {
+        Row: {
+          case_number: string
+          created_at: string
+          description: string | null
+          id: string
+          investigator_name: string | null
+          priority: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          case_number: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          investigator_name?: string | null
+          priority?: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          case_number?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          investigator_name?: string | null
+          priority?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      reports: {
+        Row: {
+          case_id: string | null
+          created_at: string
+          file_name: string | null
+          id: string
+          notes: string | null
+          report_data: Json
+          report_type: string
+          tool_name: string
+        }
+        Insert: {
+          case_id?: string | null
+          created_at?: string
+          file_name?: string | null
+          id?: string
+          notes?: string | null
+          report_data?: Json
+          report_type: string
+          tool_name: string
+        }
+        Update: {
+          case_id?: string | null
+          created_at?: string
+          file_name?: string | null
+          id?: string
+          notes?: string | null
+          report_data?: Json
+          report_type?: string
+          tool_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reports_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

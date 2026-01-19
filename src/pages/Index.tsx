@@ -3,6 +3,7 @@ import Footer from "@/components/layout/Footer";
 import Hero from "@/components/Hero";
 import ToolsGrid from "@/components/ToolsGrid";
 import Features from "@/components/Features";
+import CaseManager from "@/components/cases/CaseManager";
 
 const Index = () => {
   return (
@@ -10,6 +11,9 @@ const Index = () => {
       <Header />
       <main>
         <Hero />
+        <section id="cases" className="py-12 container mx-auto px-4">
+          <CaseManager />
+        </section>
         <ToolsGrid />
         <Features />
       </main>
