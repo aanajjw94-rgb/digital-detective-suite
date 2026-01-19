@@ -8,6 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
 import { generateFileCarverReport } from "@/lib/pdfExport";
 import { toast } from "sonner";
+import { SaveToCase } from "./SaveToCase";
 
 interface FileSignature {
   name: string;
@@ -361,6 +362,23 @@ export const FileCarver = () => {
                 <Download className="w-4 h-4 ml-2" />
                 تحميل الملفات ({carvedFiles.length})
               </Button>
+              <SaveToCase
+                toolName="File Carver"
+                reportType="Carved Files"
+                reportData={{
+                  diskImage: diskImageName,
+                  diskSize: diskImageSize,
+                  filesFound: carvedFiles.length,
+                  files: carvedFiles.map(f => ({
+                    type: f.type,
+                    offset: f.offset,
+                    size: f.size,
+                    confidence: f.confidence
+                  }))
+                }}
+                fileName={diskImageName}
+                disabled={carvedFiles.length === 0}
+              />
               <Button 
                 variant="outline" 
                 onClick={() => {

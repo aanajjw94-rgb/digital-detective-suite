@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import { Image, Upload, MapPin, Calendar, Camera, Info, FileDown } from "lucide-react";
 import { toast } from "sonner";
 import { generateGenericReport } from "@/lib/pdfExport";
+import { SaveToCase } from "./SaveToCase";
 
 interface ImageMetadata {
   fileName: string;
@@ -117,7 +118,14 @@ const MetadataAnalyzer = () => {
       {/* Results */}
       {metadata && !isLoading && (
         <div className="mt-6 animate-fade-in">
-          <div className="flex justify-end mb-4">
+          <div className="flex justify-end gap-2 mb-4">
+            <SaveToCase
+              toolName="Metadata Analyzer"
+              reportType="EXIF Metadata"
+              reportData={metadata}
+              fileName={metadata.fileName}
+              disabled={!metadata}
+            />
             <button
               onClick={() => {
                 generateGenericReport(

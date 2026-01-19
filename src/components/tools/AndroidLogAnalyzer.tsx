@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { generateAndroidLogReport } from "@/lib/pdfExport";
 import { toast } from "sonner";
+import { SaveToCase } from "./SaveToCase";
 
 interface LogEntry {
   timestamp: string;
@@ -422,6 +423,20 @@ ${analysis.errors.slice(0, 50).map(e => `[${e.timestamp}] ${e.tag}: ${e.message}
                 <Download className="w-4 h-4 ml-2" />
                 تصدير TXT
               </Button>
+              <SaveToCase
+                toolName="Android Log Analyzer"
+                reportType="Logcat Analysis"
+                reportData={{
+                  totalLines: analysis.totalLines,
+                  errors: analysis.errors.length,
+                  warnings: analysis.warnings.length,
+                  suspiciousActivities: analysis.suspiciousActivities.length,
+                  sensitiveData: analysis.sensitiveData.length,
+                  crashLogs: analysis.crashLogs.length,
+                  timeRange: analysis.timeRange
+                }}
+                disabled={!analysis}
+              />
               <Button 
                 onClick={() => {
                   const topApps = Object.entries(analysis.appActivities)

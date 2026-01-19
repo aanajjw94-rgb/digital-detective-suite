@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
 import { generateForensicPDF, ForensicReport } from "@/lib/pdfExport";
+import { SaveToCase } from "./SaveToCase";
 
 interface GPSData {
   latitude: number | null;
@@ -417,6 +418,21 @@ export const GPSExtractor = () => {
                 <Button variant="outline" size="sm" onClick={clearResults}>
                   مسح
                 </Button>
+                <SaveToCase
+                  toolName="GPS Extractor"
+                  reportType="GPS Location Data"
+                  reportData={{
+                    totalImages: results.length,
+                    imagesWithGPS: results.filter(r => r.hasGPS).length,
+                    locations: results.filter(r => r.hasGPS).map(r => ({
+                      fileName: r.fileName,
+                      latitude: r.gpsData?.latitude,
+                      longitude: r.gpsData?.longitude,
+                      dateTime: r.dateTime
+                    }))
+                  }}
+                  disabled={results.length === 0}
+                />
                 <Button size="sm" onClick={exportPDF}>
                   <FileDown className="w-4 h-4 ml-1" />
                   PDF
