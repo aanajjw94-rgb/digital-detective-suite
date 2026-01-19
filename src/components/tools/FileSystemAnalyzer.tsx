@@ -1,11 +1,13 @@
 import { useState, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Database, Upload, Folder, File, Trash2, AlertTriangle, Clock, Download, ChevronRight, ChevronDown } from "lucide-react";
+import { Database, Upload, Folder, File, Trash2, AlertTriangle, Clock, Download, ChevronRight, ChevronDown, FileDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { generateForensicPDF, ForensicReport } from "@/lib/pdfExport";
+import { toast } from "sonner";
 
 interface FileEntry {
   name: string;
@@ -560,10 +562,82 @@ ${result.deletedFiles.filter(f => f.recoverable).map(f =>
               </TabsContent>
             </Tabs>
 
-            <Button onClick={exportReport} className="w-full">
-              <Download className="w-4 h-4 ml-2" />
-              تصدير التقرير
-            </Button>
+            <div className="flex gap-2">
+              <Button onClick={exportReport} variant="outline" className="flex-1">
+                <Download className="w-4 h-4 ml-2" />
+                تصدير TXT
+              </Button>
+              <Button 
+                onClick={() => {
+                  const report: ForensicReport = {
+                    toolName: 'FAT/NTFS Analyzer',
+                    toolNameAr: 'محلل FAT/NTFS',
+                    generatedAt: new Date(),
+                    fileName: imageName,
+                    sections: [
+                      {
+                        title: 'Disk Image Information',
+                        table: {
+                          headers: ['Property', 'Value'],
+                          rows: [
+                            ['Image Name', imageName],
+                            ['Total Size', formatBytes(result.totalSize)],
+                            ['Used Space', formatBytes(result.usedSpace)],
+                            ['Free Space', formatBytes(result.freeSpace)],
+                            ['Cluster Size', formatBytes(result.clusterSize)],
+                            ['File System', result.fatType || result.ntfsVersion || 'Unknown'],
+                          ]
+                        }
+                      },
+                      {
+                        title: 'Partitions',
+                        table: {
+                          headers: ['Type', 'File System', 'Start Sector', 'Size', 'Bootable'],
+                          rows: result.partitions.map(p => [
+                            p.type,
+                            p.fileSystem,
+                            p.startSector.toString(),
+                            formatBytes(p.size),
+                            p.bootable ? 'Yes' : 'No'
+                          ])
+                        }
+                      },
+                      {
+                        title: 'Deleted Files (Recoverable)',
+                        table: {
+                          headers: ['File Name', 'Size', 'Status', 'Cluster'],
+                          rows: result.deletedFiles.filter(f => f.recoverable).map(f => [
+                            f.name,
+                            formatBytes(f.size),
+                            f.fragmentStatus,
+                            f.cluster.toString()
+                          ])
+                        }
+                      },
+                      {
+                        title: 'Active Files',
+                        table: {
+                          headers: ['File Name', 'Size', 'Type', 'Attributes'],
+                          rows: result.files.slice(0, 50).map(f => [
+                            f.name,
+                            formatBytes(f.size),
+                            f.isDirectory ? 'Directory' : 'File',
+                            f.attributes.join(', ') || 'None'
+                          ])
+                        }
+                      }
+                    ],
+                    summary: `File system analysis complete. Found ${result.files.length} active files, ${result.deletedFiles.length} deleted files (${result.deletedFiles.filter(f => f.recoverable).length} recoverable), and ${result.partitions.length} partitions.`
+                  };
+                  generateForensicPDF(report);
+                  toast.success("تم تصدير التقرير بنجاح!");
+                }}
+                className="flex-1"
+              >
+                <FileDown className="w-4 h-4 ml-2" />
+                تصدير PDF
+              </Button>
+            </div>
           </>
         )}
       </CardContent>

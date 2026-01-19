@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
-import { Image, Upload, MapPin, Calendar, Camera, Info } from "lucide-react";
+import { Image, Upload, MapPin, Calendar, Camera, Info, FileDown } from "lucide-react";
 import { toast } from "sonner";
+import { generateGenericReport } from "@/lib/pdfExport";
 
 interface ImageMetadata {
   fileName: string;
@@ -116,6 +117,32 @@ const MetadataAnalyzer = () => {
       {/* Results */}
       {metadata && !isLoading && (
         <div className="mt-6 animate-fade-in">
+          <div className="flex justify-end mb-4">
+            <button
+              onClick={() => {
+                generateGenericReport(
+                  'Metadata Analyzer',
+                  'محلل البيانات الوصفية',
+                  {
+                    'File Information': {
+                      'File Name': metadata.fileName,
+                      'File Size': metadata.fileSize,
+                      'File Type': metadata.fileType,
+                      'Dimensions': metadata.dimensions || 'N/A',
+                      'Last Modified': metadata.lastModified,
+                    },
+                    ...(metadata.exifData ? { 'EXIF Data': metadata.exifData } : {}),
+                  },
+                  metadata.fileName
+                );
+                toast.success("تم تصدير التقرير بنجاح!");
+              }}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/30 hover:bg-primary/20 transition-colors text-sm text-primary"
+            >
+              <FileDown className="w-4 h-4" />
+              <span>تصدير PDF</span>
+            </button>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Preview */}
             {preview && (

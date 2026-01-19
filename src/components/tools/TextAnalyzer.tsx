@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { FileText, Search, BarChart3, Eye, EyeOff } from "lucide-react";
+import { FileText, Search, BarChart3, Eye, EyeOff, FileDown } from "lucide-react";
+import { toast } from "sonner";
+import { generateGenericReport } from "@/lib/pdfExport";
 
 interface TextStats {
   characters: number;
@@ -98,6 +100,39 @@ const TextAnalyzer = () => {
       {/* Results */}
       {stats && (
         <div className="mt-6 animate-fade-in space-y-4">
+          <div className="flex justify-end">
+            <button
+              onClick={() => {
+                generateGenericReport(
+                  'Text Analyzer',
+                  'محلل النصوص',
+                  {
+                    'Statistics': {
+                      'Characters': stats.characters.toString(),
+                      'Characters (no spaces)': stats.charactersNoSpaces.toString(),
+                      'Words': stats.words.toString(),
+                      'Sentences': stats.sentences.toString(),
+                      'Paragraphs': stats.paragraphs.toString(),
+                      'Lines': stats.lines.toString(),
+                      'Average Word Length': stats.avgWordLength.toString(),
+                      'Longest Word': stats.longestWord,
+                    },
+                    'Extracted Data': {
+                      'Emails': stats.emails.join(', ') || 'None',
+                      'URLs': stats.urls.join(', ') || 'None',
+                      'IP Addresses': stats.ips.join(', ') || 'None',
+                      'Phone Numbers': stats.phones.join(', ') || 'None',
+                    },
+                  }
+                );
+                toast.success("تم تصدير التقرير بنجاح!");
+              }}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/30 hover:bg-primary/20 transition-colors text-sm text-primary"
+            >
+              <FileDown className="w-4 h-4" />
+              <span>تصدير PDF</span>
+            </button>
+          </div>
           {/* Basic Stats */}
           <div className="bg-secondary/50 rounded-xl p-4 border border-border">
             <h4 className="text-sm font-medium text-muted-foreground mb-4 flex items-center gap-2">
