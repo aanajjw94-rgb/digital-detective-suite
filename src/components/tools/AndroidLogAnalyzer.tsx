@@ -1,12 +1,14 @@
 import { useState, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, Upload, AlertTriangle, Info, Bug, Search, Download, Filter } from "lucide-react";
+import { FileText, Upload, AlertTriangle, Info, Bug, Search, Download, Filter, FileDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { generateAndroidLogReport } from "@/lib/pdfExport";
+import { toast } from "sonner";
 
 interface LogEntry {
   timestamp: string;
@@ -415,10 +417,36 @@ ${analysis.errors.slice(0, 50).map(e => `[${e.timestamp}] ${e.tag}: ${e.message}
               </TabsContent>
             </Tabs>
 
-            <Button onClick={exportReport} className="w-full">
-              <Download className="w-4 h-4 ml-2" />
-              تصدير التقرير الجنائي
-            </Button>
+            <div className="flex gap-2">
+              <Button onClick={exportReport} className="flex-1" variant="outline">
+                <Download className="w-4 h-4 ml-2" />
+                تصدير TXT
+              </Button>
+              <Button 
+                onClick={() => {
+                  const topApps = Object.entries(analysis.appActivities)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 15) as Array<[string, number]>;
+                  
+                  generateAndroidLogReport({
+                    totalLines: analysis.totalLines,
+                    errors: analysis.errors.length,
+                    warnings: analysis.warnings.length,
+                    suspiciousActivities: analysis.suspiciousActivities,
+                    sensitiveData: analysis.sensitiveData,
+                    crashLogs: analysis.crashLogs.length,
+                    networkActivities: analysis.networkActivities.length,
+                    timeRange: analysis.timeRange,
+                    topApps,
+                  });
+                  toast.success("تم تصدير التقرير بنجاح!");
+                }}
+                className="flex-1"
+              >
+                <FileDown className="w-4 h-4 ml-2" />
+                تصدير PDF
+              </Button>
+            </div>
           </>
         )}
       </CardContent>
