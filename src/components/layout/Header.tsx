@@ -1,8 +1,11 @@
-import { Shield, Terminal, Menu } from "lucide-react";
+import { Shield, Terminal, Menu, LogOut, User } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, signOut } = useAuth();
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl">
@@ -37,13 +40,27 @@ const Header = () => {
             </a>
           </nav>
 
-          {/* Status */}
+          {/* Status & User */}
           <div className="hidden md:flex items-center gap-4">
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-success/10 border border-success/30">
               <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
               <span className="text-xs font-mono text-success">متصل</span>
             </div>
-            <Terminal className="w-5 h-5 text-muted-foreground" />
+            {user && (
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground truncate max-w-[150px]">
+                  {user.email}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={signOut}
+                  className="text-muted-foreground hover:text-destructive"
+                >
+                  <LogOut className="w-4 h-4" />
+                </Button>
+              </div>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
