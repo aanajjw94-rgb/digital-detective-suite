@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 import { Plus, FolderOpen, FileText, Trash2, Edit, Eye, Search, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -35,6 +36,7 @@ interface Report {
 }
 
 const CaseManager = () => {
+  const { user } = useAuth();
   const [cases, setCases] = useState<Case[]>([]);
   const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(true);
@@ -106,7 +108,7 @@ const CaseManager = () => {
       const caseNumber = newCase.case_number || generateCaseNumber();
       const { error } = await supabase
         .from('cases')
-        .insert([{ ...newCase, case_number: caseNumber }]);
+        .insert([{ ...newCase, case_number: caseNumber, user_id: user?.id }]);
       
       if (error) throw error;
       

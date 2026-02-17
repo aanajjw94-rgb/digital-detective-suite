@@ -48,6 +48,8 @@ export const saveReportToCase = async (
   fileName?: string,
   notes?: string
 ) => {
+  const { data: { user } } = await supabase.auth.getUser();
+  
   const { error } = await supabase
     .from('reports')
     .insert([{
@@ -56,7 +58,8 @@ export const saveReportToCase = async (
       report_type: reportType,
       report_data: reportData as never,
       file_name: fileName || null,
-      notes: notes || null
+      notes: notes || null,
+      user_id: user?.id
     }]);
   
   if (error) throw error;
