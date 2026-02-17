@@ -25,6 +25,7 @@ export type Database = {
           status: string
           title: string
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           case_number: string
@@ -36,6 +37,7 @@ export type Database = {
           status?: string
           title: string
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           case_number?: string
@@ -47,6 +49,34 @@ export type Database = {
           status?: string
           title?: string
           updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -60,6 +90,7 @@ export type Database = {
           report_data: Json
           report_type: string
           tool_name: string
+          user_id: string | null
         }
         Insert: {
           case_id?: string | null
@@ -70,6 +101,7 @@ export type Database = {
           report_data?: Json
           report_type: string
           tool_name: string
+          user_id?: string | null
         }
         Update: {
           case_id?: string | null
@@ -80,6 +112,7 @@ export type Database = {
           report_data?: Json
           report_type?: string
           tool_name?: string
+          user_id?: string | null
         }
         Relationships: [
           {
